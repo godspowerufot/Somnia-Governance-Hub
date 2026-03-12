@@ -1,0 +1,299 @@
+
+
+
+
+
+
+
+Build a minimalistic Web3 DAO frontend for the Somnia blockchain.
+
+Goal:
+Create a simple reactive DAO dashboard where users can connect a wallet, view proposals, vote on proposals, and see funding progress. The UI must be clean, minimal, and focused on clarity.
+
+Design style:
+Minimalistic flat design.
+
+Color scheme:
+
+* background: black (#000000)
+* primary text: white (#FFFFFF)
+* accent color: green (#00FF88)
+
+No animations.
+No gradients.
+No shadows.
+Use simple borders and spacing.
+Use a modern sans-serif font like Inter.
+
+Layout:
+Centered layout with a max width of 1100px.
+
+All components should be reusable and separated properly.
+
+Tech stack:
+Next.js (App Router)
+React
+TypeScript
+TailwindCSS
+wagmi + viem for wallet connection
+ethers for contract interaction
+
+Architecture principle:
+Separation of concerns.
+
+Folders:
+
+* components
+* pages
+* hooks
+* services
+* styles
+* contracts
+* utils
+
+Folder Structure:
+
+src/
+app/
+page.tsx
+proposals/page.tsx
+proposals/[id]/page.tsx
+create/page.tsx
+dashboard/page.tsx
+components/
+Navbar.tsx
+ConnectWalletButton.tsx
+ProposalCard.tsx
+VoteButtons.tsx
+FundingProgress.tsx
+ActivityFeed.tsx
+hooks/
+useProposals.ts
+useVotes.ts
+useFunding.ts
+services/
+contractService.ts
+proposalService.ts
+contracts/
+daoAbi.ts
+styles/
+globals.css
+utils/
+formatAddress.ts
+
+UI Requirements:
+
+Navbar Component:
+Top navigation bar with:
+
+* Logo text: "Somnia DAO"
+* Links:
+  Home
+  Proposals
+  Create Proposal
+  Dashboard
+* Wallet Connect Button on the right
+
+Connect Wallet Button:
+Rectangular button with border.
+
+Style:
+border: 1px solid #00FF88
+text: Connect Wallet
+background: transparent
+
+When connected show:
+0x12...89F
+
+Home Page:
+
+Header:
+"Somnia Reactive DAO"
+
+Description:
+"A simple governance and funding DAO where community members vote and fund proposals in real time."
+
+Below header show three metrics:
+
+Active Proposals
+Total Funding
+Total Votes
+
+Use simple bordered cards.
+
+Buttons:
+
+View Proposals
+Create Proposal
+
+Proposals Page:
+
+List all proposals in cards.
+
+Proposal Card Layout:
+
+Title
+Short description
+Funding progress
+Vote count
+
+Example:
+
+Title:
+Build Somnia Analytics Dashboard
+
+Description:
+Create an analytics tool for Somnia ecosystem data.
+
+Funding:
+420 / 1000 SOMNIA
+
+Votes:
+YES: 72
+NO: 18
+
+Button:
+View Proposal
+
+Proposal Details Page:
+
+Show full proposal information.
+
+Sections:
+
+Title
+
+Description
+
+Funding Goal
+
+Current Funding
+
+Vote Results
+
+Vote Buttons Component:
+
+Two buttons side by side.
+
+YES button
+Border: green
+
+NO button
+Border: white
+
+Buttons:
+
+[ YES ]
+[ NO ]
+
+Below buttons display:
+
+Your Vote:
+Not Voted
+
+Funding Section:
+
+Input field:
+Amount to fund
+
+Button:
+
+Fund Proposal
+
+Funding progress bar:
+
+Simple horizontal bar with green fill.
+
+Create Proposal Page:
+
+Form fields:
+
+Title input
+Description textarea
+Funding Goal input
+
+Submit button:
+
+Submit Proposal
+
+Style:
+
+border: 1px solid #00FF88
+
+Dashboard Page:
+
+Show reactive DAO statistics.
+
+Sections:
+
+Live Activity Feed
+
+Example events:
+
+0x12...4A voted YES on Proposal #3
+0x91...7F funded 10 SOMNIA
+0x33...DD created a proposal
+
+Funding Leaderboard
+
+Top funded proposals list.
+
+Proposal Status Table:
+
+Columns:
+
+Proposal
+Funding
+Votes
+Status
+
+Component Rules:
+
+Each component must be reusable.
+
+Keep components small.
+
+Example:
+
+ProposalCard only displays proposal data.
+
+VoteButtons handles vote actions.
+
+Services handle blockchain calls.
+
+Hooks manage data fetching and contract events.
+
+Reactivity:
+
+Frontend should listen for smart contract events:
+
+ProposalCreated
+VoteCast
+FundingReceived
+
+When events fire:
+
+Update proposals list
+Update vote counts
+Update funding progress
+Update activity feed
+
+UI style rules:
+
+Flat design
+1px borders
+Simple spacing
+No animations
+No gradients
+Dark background
+White text
+Green accent
+
+Responsive design:
+
+Mobile friendly
+Stacked layout on small screens
+
+Goal result:
+
+A clean, minimal Web3 DAO dashboard that clearly demonstrates reactive blockchain governance interactions.
