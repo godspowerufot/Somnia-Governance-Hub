@@ -21,62 +21,31 @@ export default function CreateProposalPage() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [goal, setGoal] = useState("");
+    const [amount, setAmount] = useState("");
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
     const [status, setStatus] = useState("Initializing...");
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
 
-    // Reactive Redirection based on Somnia Reactivity
+    // Countdown and Redirection Logic
     useEffect(() => {
-        if (!sdk || !isPending || !txHash) return;
+        if (!isSuccess || countdown <= 0) return;
 
-        let subscription: any;
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    router.push("/proposals");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
 
-        const setupReactivity = async () => {
-            try {
-                setStatus("Waiting for Somnia Reactive Node...");
-                subscription = await sdk.subscribe({
-                    ethCalls: [],
-                    eventContractSources: [SOMNIA_GOVERNANCE_ADDRESS],
-                    onData: (data: any) => {
-                        try {
-                            const decoded = decodeEventLog({
-                                abi: SOMNIA_GOVERNANCE_ABI,
-                                data: data.data,
-                                topics: data.topics,
-                            });
-
-                            if (decoded.eventName === 'ProposalCreated') {
-                                const args = decoded.args as any;
-                                // Verify it's our proposal (by proposer)
-                                if (args.proposer.toLowerCase() === walletClient?.account?.address.toLowerCase()) {
-                                    setStatus("Verified! Redirecting...");
-                                    showToast("Proposal Created Successfully!", "success");
-
-                                    // Give a small delay for the user to see the "Verified" status
-                                    setTimeout(() => {
-                                        setIsPending(false);
-                                        router.push("/");
-                                    }, 1500);
-                                }
-                            }
-                        } catch (err) {
-                            // Skip unrelated events
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error("Reactivity subscription failed:", err);
-            }
-        };
-
-        setupReactivity();
-
-        return () => {
-            if (subscription && typeof subscription.unsubscribe === 'function') {
-                subscription.unsubscribe();
-            }
-        };
-    }, [sdk, isPending, txHash, walletClient, router, showToast]);
+        return () => clearInterval(timer);
+    }, [isSuccess, countdown, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,15 +53,26 @@ export default function CreateProposalPage() {
 
         try {
             setIsPending(true);
+            setIsSuccess(false);
             setTxHash(null);
+            setCurrentStep(1);
             setStatus("Sending Transaction...");
 
             const service = new ContractService(publicClient as any, walletClient as any, sdk as any);
             const hash = await service.createProposal(title, description, goal);
 
             setTxHash(hash);
+            setCurrentStep(2);
             setStatus("Transaction Sent! Confirming...");
             console.log("Proposal creation transaction sent:", hash);
+
+            // Wait for confirmation
+            await publicClient.waitForTransactionReceipt({ hash });
+
+            setCurrentStep(3);
+            setIsSuccess(true);
+            setCountdown(5); // 5 second countdown before redirect
+            showToast("Proposal created successfully!", "success");
         } catch (err) {
             console.error(err);
             showToast("Failed to create proposal: " + (err as any).message, "error");
@@ -106,6 +86,11 @@ export default function CreateProposalPage() {
                 isOpen={isPending}
                 txHash={txHash}
                 status={status}
+                showHash={true}
+                isSuccess={isSuccess}
+                countdown={countdown}
+                currentStep={currentStep}
+                onClose={() => setIsPending(false)}
             />
 
             <h1 className="text-4xl font-bold mb-2 tracking-tight">Create Proposal</h1>

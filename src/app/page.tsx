@@ -18,7 +18,7 @@ export default function Home() {
     return (
         <main className="container-minimal py-12">
             {/* Header Section */}
-            <div className="flex justify-between items-end mb-12">
+            <div className="flex flex-col md:flex-row justify-between items-start    gap-y-4 md:items-end mb-12">
                 <div>
                     <h1 className="text-5xl font-bold tracking-tighter mb-2">DASHBOARD</h1>
                     <p className="text-white/40 font-mono text-xs uppercase tracking-widest">Somnia Reactive Governance Protocol</p>

@@ -21,6 +21,8 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
     const [status, setStatus] = useState("Initializing...");
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [currentStep, setCurrentStep] = useState(1);
 
     // Reactive Status Sync: Watch the events stream and catch our transaction
     useEffect(() => {
@@ -28,15 +30,9 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
 
         const found = events.find(e => e.transactionHash === txHash);
         if (found) {
-            setStatus("Verified! Pulse Confirmed.");
-
-            // Auto-close after a delay so they see the success
-            const timer = setTimeout(() => {
-                setIsPending(false);
-                setTxHash(null);
-            }, 2000);
-
-            return () => clearTimeout(timer);
+            setIsPending(false);
+            setTxHash(null);
+            setIsSuccess(false);
         }
     }, [events, isPending, txHash]);
 
@@ -49,6 +45,8 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
         if (!publicClient || !walletClient) return;
         try {
             setIsPending(true);
+            setIsSuccess(false);
+            setCurrentStep(1);
             setTxHash(null);
             setStatus(`Casting ${support ? 'YES' : 'NO'} Vote...`);
 
@@ -56,18 +54,16 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
             const hash = await service.vote(BigInt(params.id), support);
 
             setTxHash(hash);
+            setCurrentStep(2);
             setStatus("Transaction Sent! Confirming...");
 
             // Wait for confirmation to provide better UX
             await publicClient.waitForTransactionReceipt({ hash });
 
-            setStatus("Vote Confirmed!");
-            showToast(`Vote confirmed!`, "success");
+            setCurrentStep(3);
+            setIsSuccess(true);
+            location.reload();
 
-            // Delay closing to show success state
-            setTimeout(() => {
-                setIsPending(false);
-            }, 1500);
         } catch (err) {
             console.error(err);
             showToast("Voting failed: " + (err as any).message, "error");
@@ -79,6 +75,8 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
         if (!publicClient || !walletClient || !amount) return;
         try {
             setIsPending(true);
+            setIsSuccess(false);
+            setCurrentStep(1);
             setTxHash(null);
             setStatus(`Adding ${amount} STT to the collective...`);
 
@@ -86,18 +84,15 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
             const hash = await service.fund(BigInt(params.id), amount);
 
             setTxHash(hash);
+            setCurrentStep(2);
             setStatus("Contribution Sent! Confirming...");
 
             // Wait for confirmation
             await publicClient.waitForTransactionReceipt({ hash });
 
-            setStatus("Contribution Successful!");
-            showToast(`Funding successful!`, "success");
-            setAmount("");
-
-            setTimeout(() => {
-                setIsPending(false);
-            }, 1500);
+            setCurrentStep(3);
+            setIsSuccess(true);
+            location.reload();
         } catch (err) {
             console.error(err);
             showToast("Funding failed: " + (err as any).message, "error");
@@ -121,6 +116,8 @@ export default function ProposalDetailsPage({ params }: { params: { id: string }
                 isOpen={isPending}
                 txHash={txHash}
                 status={status}
+                isSuccess={isSuccess}
+                currentStep={currentStep}
                 onClose={() => setIsPending(false)}
             />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

@@ -58,7 +58,7 @@ npm test
 ```
 
 ## 📜 Contract Details (Testnet)
-- **Governance Contract**: `0x0F96627E38f8E2619E2B2bF67D0c2B35B9119B86`
+- **Governance Contract**: `0xd45b60a393defaca9be87329d4a927357eb846bf`
 - **Chain ID**: `50312`
 - **RPC**: `https://api.infra.testnet.somnia.network`
 

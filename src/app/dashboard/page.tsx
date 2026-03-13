@@ -13,7 +13,7 @@ export default function DashboardPage() {
 
     return (
         <main className="container-minimal py-12">
-            <div className="flex justify-between items-end mb-12">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight">DAO Dashboard</h1>
                     <p className="text-white/50">Real-time governance and funding monitoring.</p>
